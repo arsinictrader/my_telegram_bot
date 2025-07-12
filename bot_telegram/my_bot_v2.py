@@ -4,46 +4,62 @@ from flask import Flask, request
 from telegram import Update, Bot
 from telegram.ext import Application, CommandHandler, ContextTypes
 
-# التوكن من متغير البيئة (أو ضعه مباشرة بين "")
+# التوكن من المتغير البيئي
 TOKEN = os.environ.get("BOT_TOKEN")
+
+# إنشاء البوت و Flask
 bot = Bot(token=TOKEN)
-
 app = Flask(__name__)
-application = Application.builder().token(TOKEN).build()
 
-# الأوامر
+# المعالجات (Handlers)
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("👋 مرحبًا بك! هذا البوت يعمل بنجاح.")
+    await update.message.reply_text("👋 مرحبا بك! هذا بوت يعمل على Render.")
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("❓ استخدم /start للبدء.")
+    await update.message.reply_text("استخدم /start للبدء.")
 
-# إضافة الهاندلرز
-application.add_handler(CommandHandler("start", start))
-application.add_handler(CommandHandler("help", help_command))
-
-# مسار الاستقبال من Telegram
+# نقطة استقبال Webhook
 @app.post(f"/{TOKEN}")
 async def webhook():
     data = request.get_json(force=True)
     update = Update.de_json(data, bot)
-    await application.initialize()
-    await application.process_update(update)
-    return "ok"
 
+    # نأخذ التطبيق من config
+    application: Application = app.config['application']
+
+    # تهيئة البوت
+    await application.bot.initialize()
+
+    # تمرير التحديث إلى التطبيق
+    await application.process_update(update)
+
+    return "OK"
+
+# صفحة اختبار
 @app.get("/")
 def home():
-    return "✅ البوت شغال!"
+    return "✅ البوت يعمل!"
 
-# عند التشغيل
-if __name__ == '__main__':
-    async def run():
-        # تعيين Webhook
-        url = f"https://{os.environ.get('RENDER_EXTERNAL_HOSTNAME')}/{TOKEN}"
-        await application.bot.set_webhook(url)
-        print(f"✅ Webhook set to: {url}")
+# نقطة البداية
+async def main():
+    # إنشاء التطبيق
+    application = Application.builder().token(TOKEN).build()
 
-        # تشغيل Flask
-        app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
+    # ربط المعالجات
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("help", help_command))
 
-    asyncio.run(run())
+    # إعداد Webhook
+    webhook_url = f"https://{os.environ['RENDER_EXTERNAL_HOSTNAME']}/{TOKEN}"
+    await application.bot.set_webhook(webhook_url)
+
+    # حفظ التطبيق في Flask config
+    app.config['application'] = application
+
+    # تشغيل Flask
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
+
+# تشغيل البوت
+if __name__ == "__main__":
+    asyncio.run(main())

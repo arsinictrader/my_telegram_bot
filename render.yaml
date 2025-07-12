@@ -1,7 +1,1 @@
-services:
-  - type: web
-    name: my-telegram-bot
-    env: python
-    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
-    startCommand: python bot_telegram/my_bot_v2.py
-    plan: free
+python bot_telegram/my_bot_v2.py

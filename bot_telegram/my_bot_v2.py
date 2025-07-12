@@ -35,6 +35,7 @@ def index():
 async def webhook():
     if request.method == "POST":
         data = request.get_json(force=True)
+        print("Received data:", data)  # هذا السطر مهم للتصحيح
         update = Update.de_json(data, application.bot)
 
         if not application.running:
@@ -43,6 +44,7 @@ async def webhook():
 
         await application.process_update(update)
         return "OK"
+
 if __name__ == "__main__":
     async def main():
         await application.initialize()

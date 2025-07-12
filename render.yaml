@@ -1,3 +1,11 @@
-envVars:
-  - key: PYTHON_VERSION
-    value: 3.11.9
+services:
+  - type: web
+    name: my-telegram-bot
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python bot_telegram/my_bot_v2.py
+    envVars:
+      - key: BOT_TOKEN
+        sync: false
+    plan: free
+    autoDeploy: true

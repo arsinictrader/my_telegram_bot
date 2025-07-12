@@ -1,5 +1,8 @@
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+import threading
+from http.server import SimpleHTTPRequestHandler
+from socketserver import TCPServer
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
@@ -21,13 +24,4 @@ https://t.me/Arsenic_Trader0"""
     )
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("📌 أرسل /start لعرض محتوى القناة ورابط الانضمام.")
-
-app = ApplicationBuilder().token("7574658871:AAGoPVLsmrkYVUNWimZWOPcontuLXGYyiU4").build()
-
-app.add_handler(CommandHandler("start", start))
-app.add_handler(CommandHandler("help", help_command))
-
-print("✅ البوت يعمل الآن... جربي إرسال /start أو /help.")
-
-app.run_polling()
+    await update.message.reply_text("_

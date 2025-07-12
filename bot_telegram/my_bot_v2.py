@@ -8,6 +8,10 @@ TOKEN = os.environ.get("BOT_TOKEN")  # ضع التوكن في إعدادات Ren
 
 app = Flask(__name__)
 application = Application.builder().token(TOKEN).build()
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("أهلاً بك! البوت يعمل ✅")
+
+application.add_handler(CommandHandler("start", start))
 
 
 @app.route("/")

@@ -2,7 +2,7 @@ services:
   - type: web
     name: telegram-bot
     env: python
-    buildCommand: bash build.sh
+    buildCommand: ""
     startCommand: python bot_telegram/my_bot_v2.py
     envVars:
       - key: BOT_TOKEN

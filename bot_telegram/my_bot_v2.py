@@ -4,10 +4,14 @@ from flask import Flask, request
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 
-TOKEN = os.environ.get("BOT_TOKEN")  # ضع التوكن في إعدادات Render كمتغير بيئة باسم BOT_TOKEN
+# ⚠️ تأكد أنك أضفت BOT_TOKEN في إعدادات Render
+TOKEN = os.environ.get("BOT_TOKEN")
 
+# إعداد Flask و telegram-application
 app = Flask(__name__)
 application = Application.builder().token(TOKEN).build()
+
+# دالة start للرد على المستخدم
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
         "بقدملك في القناة..\n\n"
@@ -19,32 +23,31 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "*رابط القناة تفضل للانضمام:*\n"
         "[اضغط هنا للانضمام](https://t.me/Arsenic_Trader0)"
     )
-
     await update.message.reply_text(text, parse_mode="Markdown")
 
-
+# أضف المعالج
 application.add_handler(CommandHandler("start", start))
 
-
+# صفحة فحص بسيطة
 @app.route("/")
 def index():
     return "Bot is running!"
 
-
+# webhook
 @app.route(f"/{TOKEN}", methods=["POST"])
 async def webhook():
-    if request.method == "POST":
-        data = request.get_json(force=True)
-        print("Received data:", data)  # هذا السطر مهم للتصحيح
-        update = Update.de_json(data, application.bot)
+    data = request.get_json(force=True)
+    update = Update.de_json(data, application.bot)
 
-        if not application.running:
-            await application.initialize()
-            await application.start()
+    # ✅ نتحقق أن التطبيق بدأ مرة واحدة فقط
+    if not application.running:
+        await application.initialize()
+        await application.start()
 
-        await application.process_update(update)
-        return "OK"
+    await application.process_update(update)
+    return "OK"
 
+# تشغيل البوت وتعيين الويب هوك
 if __name__ == "__main__":
     async def main():
         await application.initialize()

@@ -1,7 +1,7 @@
 import os
 from flask import Flask, request
 from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, Dispatcher
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
 TOKEN = "7574658871:AAHmLGQqI6r8J-gCc7NB4MsFZf2IIxOXjkc"
 

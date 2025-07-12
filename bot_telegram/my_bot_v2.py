@@ -4,43 +4,46 @@ from flask import Flask, request
 from telegram import Update, Bot
 from telegram.ext import Application, CommandHandler, ContextTypes
 
-TOKEN = "7574658871:AAHmLGQqI6r8J-gCc7NB4MsFZf2IIxOXjkc"
+# التوكن من متغير البيئة (أو ضعه مباشرة بين "")
+TOKEN = os.environ.get("BOT_TOKEN")
 bot = Bot(token=TOKEN)
 
 app = Flask(__name__)
 application = Application.builder().token(TOKEN).build()
 
-# --- أوامر البوت ---
+# الأوامر
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("👋 أهلاً بك في البوت!")
+    await update.message.reply_text("👋 مرحبًا بك! هذا البوت يعمل بنجاح.")
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("استخدم /start للبدء 😊")
+    await update.message.reply_text("❓ استخدم /start للبدء.")
 
-# --- مسار الصفحة الرئيسية ---
-@app.route("/", methods=["GET"])
-def home():
-    return "✅ البوت شغّال على Render!"
+# إضافة الهاندلرز
+application.add_handler(CommandHandler("start", start))
+application.add_handler(CommandHandler("help", help_command))
 
-# --- مسار Webhook ---
-@app.route(f"/{TOKEN}", methods=["POST"])
+# مسار الاستقبال من Telegram
+@app.post(f"/{TOKEN}")
 async def webhook():
-    if not application.initialized:
-        await application.initialize()
     data = request.get_json(force=True)
     update = Update.de_json(data, bot)
+    await application.initialize()
     await application.process_update(update)
     return "ok"
 
-# --- تشغيل التطبيق ---
-if __name__ == "__main__":
-    # ربط الأوامر
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("help", help_command))
+@app.get("/")
+def home():
+    return "✅ البوت شغال!"
 
-    # تعيين Webhook
-    webhook_url = f"https://{os.environ.get('RENDER_EXTERNAL_HOSTNAME')}/{TOKEN}"
-    asyncio.run(application.bot.set_webhook(webhook_url))
+# عند التشغيل
+if __name__ == '__main__':
+    async def run():
+        # تعيين Webhook
+        url = f"https://{os.environ.get('RENDER_EXTERNAL_HOSTNAME')}/{TOKEN}"
+        await application.bot.set_webhook(url)
+        print(f"✅ Webhook set to: {url}")
 
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
+        # تشغيل Flask
+        app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
+
+    asyncio.run(run())

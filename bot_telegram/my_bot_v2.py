@@ -2,7 +2,11 @@ from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
 import os
+
 TOKEN = os.environ.get("BOT_TOKEN")
+
+if not TOKEN:
+    raise ValueError("BOT_TOKEN is missing. Did you set it in the environment variables?")
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("🚀 مرحبًا! البوت يعمل الآن بنجاح.")

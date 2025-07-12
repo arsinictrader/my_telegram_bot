@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
-echo "✅ تثبيت مكتبات المشروع..."
-pip install --force-reinstall --no-cache-dir -r requirements.txt
+
+echo "📦 جاري تثبيت المكتبات المطلوبة..."
+pip install --upgrade pip
+pip install --no-cache-dir --force-reinstall -r requirements.txt

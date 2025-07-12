@@ -3,8 +3,6 @@ from flask import Flask, request
 from telegram import Bot, Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 
-from telegram.ext import defaults  # مهم جدًا في بعض البيئات
-
 # استخدم التوكن من البيئة
 TOKEN = os.environ.get("BOT_TOKEN")
 

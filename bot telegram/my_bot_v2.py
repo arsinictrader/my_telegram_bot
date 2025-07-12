@@ -1,8 +1,14 @@
+from flask import Flask
+from threading import Thread
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
-import threading
-from http.server import SimpleHTTPRequestHandler
-from socketserver import TCPServer
+import asyncio
+
+app_flask = Flask(__name__)
+
+@app_flask.route('/')
+def home():
+    return "🌿 البوت يعمل الآن على Render."
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
@@ -26,20 +32,16 @@ https://t.me/Arsenic_Trader0"""
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("📌 أرسل /start لعرض محتوى القناة ورابط الانضمام.")
 
-def run_bot():
+async def run_telegram_bot():
     app = ApplicationBuilder().token("7574658871:AAHmLGQqI6r8J-gCc7NB4MsFZf2IIxOXjkc").build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("help", help_command))
     print("✅ البوت يعمل الآن... جربي إرسال /start أو /help.")
-    app.run_polling()
+    await app.run_polling()
 
-def run_server():
-    PORT = 10000
-    Handler = SimpleHTTPRequestHandler
-    with TCPServer(("", PORT), Handler) as httpd:
-        print(f"🌿 Running dummy server on port {PORT} to keep Render active.")
-        httpd.serve_forever()
+def start_bot():
+    asyncio.run(run_telegram_bot())
 
-if __name__ == "__main__":
-    threading.Thread(target=run_bot).start()
-    run_server()
+if __name__ == '__main__':
+    Thread(target=start_bot).start()
+    app_flask.run(host="0.0.0.0", port=10000)

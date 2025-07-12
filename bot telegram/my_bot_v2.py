@@ -1,7 +1,7 @@
+import os
 from flask import Flask, request
 from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
-import os
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, Dispatcher
 
 TOKEN = "7574658871:AAHmLGQqI6r8J-gCc7NB4MsFZf2IIxOXjkc"
 
@@ -34,18 +34,19 @@ telegram_app.add_handler(CommandHandler("start", start))
 telegram_app.add_handler(CommandHandler("help", help_command))
 
 @app_flask.route(f"/{TOKEN}", methods=["POST"])
-def webhook():
-    update = Update.de_json(request.get_json(force=True), telegram_app.bot)
-    telegram_app.update_queue.put(update)
-    return "OK", 200
+async def webhook():
+    data = request.get_json(force=True)
+    update = Update.de_json(data, telegram_app.bot)
+    await telegram_app.process_update(update)
+    return "OK"
 
 @app_flask.route("/")
 def index():
-    return "🌿 البوت يعمل الآن على Render باستخدام Webhook."
+    return "🌿 البوت يعمل الآن باستخدام Webhook."
 
 if __name__ == "__main__":
     # إعداد Webhook
     webhook_url = f"https://my-telegram-bot-t9qk.onrender.com/{TOKEN}"
-    telegram_app.bot.set_webhook(url=webhook_url)
-    # تشغيل Flask
+    import asyncio
+    asyncio.run(telegram_app.bot.set_webhook(url=webhook_url))
     app_flask.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))

@@ -27,7 +27,7 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("📌 أرسل /start لعرض محتوى القناة ورابط الانضمام.")
 
 def run_bot():
-    app = ApplicationBuilder().token("7574658871:AAGoPVLsmrkYVUNWimZWOPcontuLXGYyiU4").build()
+    app = ApplicationBuilder().token("7574658871:AAHmLGQqI6r8J-gCc7NB4MsFZf2IIxOXjkc").build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("help", help_command))
     print("✅ البوت يعمل الآن... جربي إرسال /start أو /help.")

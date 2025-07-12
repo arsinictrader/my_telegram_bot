@@ -27,3 +27,11 @@ async def webhook():
 
         await application.process_update(update)
         return "OK"
+if __name__ == "__main__":
+    async def main():
+        await application.initialize()
+        await application.bot.set_webhook(url=f"https://my-telegram-bot-qn6l.onrender.com/{TOKEN}")
+        await application.start()
+        app.run(host="0.0.0.0", port=10000)
+
+    asyncio.run(main())
